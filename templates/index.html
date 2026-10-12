@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PRESTYLE | Meesho QR Generator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-logo">P</div><div><h2>PRESTYLE</h2><p>Seller tools</p></div></div>
+    <div class="nav-label">WORKSPACE</div>
+    <a class="nav-link active" href="/">▦ &nbsp; QR Generator</a>
+    <form method="post" action="{{ url_for('logout') }}" class="logout-form">
+      <button type="submit" class="logout-button">Sign out</button>
+    </form>
+    <div class="sidebar-bottom"><span class="status-dot"></span><span>Local processing mode</span></div>
+  </aside>
+  <main class="main-content">
+    <header class="topbar">
+      <div><p class="eyebrow">MEESHO SELLER TOOLS</p><h1>AWB &amp; Packet QR Generator</h1>
+      <p class="subtitle">Match orders and create print-ready QR codes.</p></div>
+      <div class="top-badge">PRESTYLE</div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert {{ 'error-alert' if category == 'error' else '' }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <section class="intro-card"><div class="intro-icon">▤</div><div>
+      <h2>Generate your order QR sheets</h2>
+      <p>Upload your shipping-label PDF and orders CSV. The tool matches sub-order IDs with packet IDs and generates a printable PDF and Excel report.</p>
+    </div></section>
+
+    <section class="section-heading"><div><h2>Upload files</h2><p>Both files are required for matching.</p></div><span class="step-label">STEP 01</span></section>
+
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
+      <div class="upload-grid">
+        <label class="upload-card" for="pdf_file">
+          <div class="upload-icon pdf-icon">PDF</div><h3>Shipping-label PDF</h3>
+          <p>Meesho labels containing AWB numbers and sub-order IDs.</p>
+          <div class="file-picker"><span>Choose PDF file</span><span class="arrow">↑</span></div>
+          <input id="pdf_file" type="file" name="pdf_file" accept=".pdf,application/pdf" required>
+          <span id="pdfName" class="file-name">No file selected</span>
+        </label>
+        <label class="upload-card" for="csv_file">
+          <div class="upload-icon csv-icon">CSV</div><h3>Orders CSV</h3>
+          <p>Must contain <b>Sub Order No</b> and <b>Packet Id</b> columns.</p>
+          <div class="file-picker"><span>Choose CSV file</span><span class="arrow">↑</span></div>
+          <input id="csv_file" type="file" name="csv_file" accept=".csv,text/csv" required>
+          <span id="csvName" class="file-name">No file selected</span>
+        </label>
+      </div>
+      <div class="requirements"><span class="check-icon">✓</span><p>Upload files only when you are signed in. Download your reports and keep local copies.</p></div>
+      <button type="submit" id="generateButton" class="primary-button"><span id="buttonText">Generate QR sheets</span><span id="buttonArrow">→</span></button>
+      <div id="loadingMessage" class="loading-message" hidden><span class="spinner"></span>Reading PDF, matching orders and generating reports. Please wait.</div>
+    </form>
+
+    {% if stats %}
+    <section class="results-section">
+      <div class="section-heading"><div><h2>Processing complete</h2><p>Your reports are ready to download.</p></div><span class="success-label">✓ Completed</span></div>
+      <div class="stats-grid">
+        <div class="stat-card"><span>Total PDF pages processed</span><strong>{{ stats.total }}</strong></div>
+        <div class="stat-card"><span>AWB extracted</span><strong>{{ stats.awb }} / {{ stats.total }}</strong></div>
+        <div class="stat-card"><span>Sub-orders extracted</span><strong>{{ stats.suborders }} / {{ stats.total }}</strong></div>
+        <div class="stat-card"><span>Packet IDs found</span><strong>{{ stats.packets }} / {{ stats.total }}</strong></div>
+        <div class="stat-card"><span>Matched orders</span><strong>{{ stats.matched }}</strong></div>
+        <div class="stat-card"><span>Other match results</span><strong>{{ stats.unmatched }}</strong></div>
+      </div>
+      <div class="download-card"><div class="download-info"><div class="download-file-icon">PDF</div><div><h3>Printable QR sheets</h3><p>Two pages per order: AWB QR on page one and packet QR on page two.</p></div></div>
+        <a class="download-button" href="{{ downloads.pdf }}">Download PDF ↓</a></div>
+      <div class="download-card"><div class="download-info"><div class="download-file-icon excel-icon">XLS</div><div><h3>Order matching report</h3><p>AWB, sub-order ID, packet ID and match status.</p></div></div>
+        <a class="download-button secondary-button" href="{{ downloads.excel }}">Download Excel ↓</a></div>
+      <p class="note">Download reports promptly. Free hosting may remove generated files after a restart or redeployment.</p>
+    </section>
+    {% endif %}
+    <footer>PRESTYLE Seller Tools · Meesho Order Utilities</footer>
+  </main>
+</div>
+</body>
+</html>

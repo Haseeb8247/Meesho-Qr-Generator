@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PRESTYLE | Sign in</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-page">
+  <main class="login-card">
+    <div class="brand-logo login-logo">P</div>
+    <p class="eyebrow">PRESTYLE SELLER TOOLS</p>
+    <h1>Sign in</h1>
+    <p class="muted">Sign in to access your Meesho QR generator.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert {{ 'error-alert' if category == 'error' else '' }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('login', next=request.args.get('next', '')) }}">
+      <label for="username">Username</label>
+      <input id="username" name="username" autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" type="password" name="password" autocomplete="current-password" required>
+      <button class="primary-button" type="submit">Sign in →</button>
+    </form>
+    <p class="small-note">Use the credentials configured in your hosting environment.</p>
+  </main>
+</body>
+</html>
